@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3916250911543827282}
   - component: {fileID: 3916250911543827277}
-  - component: {fileID: 6068597663103663508}
+  - component: {fileID: 421490824854609036}
+  - component: {fileID: 1842832895116874756}
   m_Layer: 0
   m_Name: city4
   m_TagString: Untagged
@@ -83,7 +84,33 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6068597663103663508
+--- !u!61 &421490824854609036
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3916250911543827276}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2.3125, y: 3.875}
+    newSize: {x: 2.3125, y: 3.875}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.2, y: 3.875}
+  m_EdgeRadius: 0
+--- !u!114 &1842832895116874756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
