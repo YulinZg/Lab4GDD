@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private GameObject[] hitEffect;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +23,9 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
+            int i = Random.Range(0, 5);
             collision.gameObject.GetComponent<Enemy>().Hit();
+            Instantiate(hitEffect[i], transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
     }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -8578077412715042735}
   m_Layer: 0
   m_Name: city2
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,3 +128,4 @@ MonoBehaviour:
   - {fileID: 1852148551899890852, guid: a47b2c1c70b924e47a5a4bac003e1990, type: 3}
   - {fileID: 7580087357828888092, guid: 54e86d669a1e45443a7cc415b6a63a0c, type: 3}
   - {fileID: 4210425494141824141, guid: 2ef91061bb91b9d418990cf360efaadb, type: 3}
+  buildType: 1

@@ -7,6 +7,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private int hp = 1;
     [SerializeField] private int score;
+    [SerializeField] private EnemyType enemyType;
+
+    private enum EnemyType
+    {
+        small,
+        normal,
+        big
+    };
 
     private int dir;
 

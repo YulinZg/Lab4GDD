@@ -6,10 +6,11 @@ public class ExplodeEffect : MonoBehaviour
 {
     private void Start()
     {
-        Invoke("destroySelf", 2.0f);
+        Invoke(nameof(DestroySelf), 0.5f);
     }
-    public void destroySelf()
+
+    public void DestroySelf()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 }

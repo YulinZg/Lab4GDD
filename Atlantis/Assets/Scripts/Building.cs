@@ -1,34 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Building : MonoBehaviour
 {
-    // Start is called before the first frame update
-    [SerializeField]
-    private GameObject[] explodeEffect;
+    [SerializeField] private GameObject[] explodeEffect;
+    [SerializeField] private BuildType buildType;
 
-    private BuildType buildTyep;
-
-    private enum BuildType{
+    private enum BuildType
+    {
         side,
         middle,
         inner
     };
-    void Start()
-    {
-        if (gameObject.name == "city1" || gameObject.name == "city6")
-            buildTyep = BuildType.side;
-        else if(gameObject.name == "city2" || gameObject.name == "city5")
-            buildTyep = BuildType.middle;
-        else if (gameObject.name == "city3" || gameObject.name == "city4")
-            buildTyep = BuildType.inner;
-    }
-    public void hittingByEnemy()
+
+
+    public void HittingByEnemy()
     { 
-        StartCoroutine(doBlink(2, 40));
-        if (buildTyep == BuildType.side)
+        StartCoroutine(DoBlink(2, 40));
+        if (buildType == BuildType.side)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -54,11 +44,11 @@ public class Building : MonoBehaviour
                     newY = Random.Range(0f, 0.5f);
                     newX = Random.Range(0f, 0.7f);
                 }
-                Instantiate<GameObject>(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
+                Instantiate(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
             }
            
         }
-        else if(buildTyep == BuildType.middle)
+        else if(buildType == BuildType.middle)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -85,10 +75,10 @@ public class Building : MonoBehaviour
                     newY = Random.Range(1f, 1.5f);
                     newX = Random.Range(0f, 0.8f);
                 }
-                Instantiate<GameObject>(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
+                Instantiate(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
             }
         }
-        else if (buildTyep == BuildType.inner)
+        else if (buildType == BuildType.inner)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -115,12 +105,12 @@ public class Building : MonoBehaviour
                     newY = Random.Range(1.5f, 2f);
                     newX = Random.Range(0f, 0.5f);
                 }
-                Instantiate<GameObject>(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
+                Instantiate(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
             }
         }
     }
 
-    IEnumerator doBlink(float blinkTime, float blinkNum)
+    IEnumerator DoBlink(float blinkTime, float blinkNum)
     {
         for (int i = 0; i < blinkNum; i++)
         {
