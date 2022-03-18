@@ -70,6 +70,8 @@ public class Enemy : MonoBehaviour
             gameObject.GetComponent<PolygonCollider2D>().enabled = false;
             StartCoroutine(DoBlink(0.2f, 4));
         }
+        else
+            StartCoroutine(DoBlink(0.1f, 2));
     }
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)
@@ -79,6 +81,7 @@ public class Enemy : MonoBehaviour
             GetComponent<SpriteRenderer>().enabled = !GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
-        Destroy(gameObject);
+        if (hp == 0)
+            Destroy(gameObject);
     }
 }

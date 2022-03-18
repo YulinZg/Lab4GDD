@@ -21,11 +21,13 @@ public class Turret : MonoBehaviour
     private bool rightIsDown = false;
     private bool isAlive = true;
     private ExplosionController explosionController;
+    private GameObject shield;
 
     // Start is called before the first frame update
     void Start()
     {
         explosionController = GameObject.FindGameObjectWithTag("GameController").GetComponent<ExplosionController>();
+        shield = GameObject.FindGameObjectWithTag("Shield");
     }
 
     // Update is called once per frame
@@ -131,11 +133,6 @@ public class Turret : MonoBehaviour
     {
         isAlive = false;
         GetComponent<BoxCollider2D>().enabled = false;
-        GameObject[] buildings = GameObject.FindGameObjectsWithTag("Building");
-        foreach (GameObject building in buildings)
-        {
-            building.GetComponent<BoxCollider2D>().enabled = true;
-        }
         StartCoroutine(DoBlink(2, 40));
         explosionController.Explosion(transform.position + new Vector3(0, -0.3f, 0), 0.8f, 0.7f, 20, 2.0f);
     }
@@ -147,6 +144,12 @@ public class Turret : MonoBehaviour
             foreach (Transform child in transform)
                 child.GetComponent<SpriteRenderer>().enabled = !child.GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
+        }
+        shield.SetActive(false);
+        GameObject[] buildings = GameObject.FindGameObjectsWithTag("Building");
+        foreach (GameObject building in buildings)
+        {
+            building.GetComponent<BoxCollider2D>().enabled = true;
         }
         Destroy(gameObject);
     }
