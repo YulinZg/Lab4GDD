@@ -28,6 +28,7 @@ public class Turret : MonoBehaviour
     {
         explosionController = GameObject.FindGameObjectWithTag("GameController").GetComponent<ExplosionController>();
         shield = GameObject.FindGameObjectWithTag("Shield");
+        shield.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     // Update is called once per frame
@@ -143,9 +144,10 @@ public class Turret : MonoBehaviour
         {
             foreach (Transform child in transform)
                 child.GetComponent<SpriteRenderer>().enabled = !child.GetComponent<SpriteRenderer>().enabled;
+            shield.GetComponent<SpriteRenderer>().enabled = !shield.GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
-        shield.SetActive(false);
+        shield.GetComponent<SpriteRenderer>().enabled = false;
         GameObject[] buildings = GameObject.FindGameObjectsWithTag("Building");
         foreach (GameObject building in buildings)
         {
