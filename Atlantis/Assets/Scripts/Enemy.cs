@@ -68,12 +68,17 @@ public class Enemy : MonoBehaviour
             }
             isAlive = false;
             gameObject.GetComponent<PolygonCollider2D>().enabled = false;
-            Invoke(nameof(Disappear), 0.2f);
+            StartCoroutine(DoBlink(0.2f, 4));
         }
     }
 
-    void Disappear()
+    IEnumerator DoBlink(float blinkTime, float blinkNum)
     {
+        for (int i = 0; i < blinkNum; i++)
+        {
+            GetComponent<SpriteRenderer>().enabled = !GetComponent<SpriteRenderer>().enabled;
+            yield return new WaitForSeconds(blinkTime / blinkNum);
+        }
         Destroy(gameObject);
     }
 }

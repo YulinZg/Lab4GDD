@@ -145,7 +145,7 @@ public class Turret : MonoBehaviour
         for (int i = 0; i < blinkNum; i++)
         {
             foreach (Transform child in transform)
-                child.gameObject.GetComponent<SpriteRenderer>().enabled = !child.gameObject.GetComponent<SpriteRenderer>().enabled;
+                child.GetComponent<SpriteRenderer>().enabled = !child.GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
         Destroy(gameObject);

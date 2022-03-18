@@ -42,7 +42,7 @@ public class Building : MonoBehaviour
     {
         for (int i = 0; i < blinkNum; i++)
         {
-            gameObject.GetComponent<SpriteRenderer>().enabled = !gameObject.GetComponent<SpriteRenderer>().enabled;
+            GetComponent<SpriteRenderer>().enabled = !GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
         Destroy(gameObject);
