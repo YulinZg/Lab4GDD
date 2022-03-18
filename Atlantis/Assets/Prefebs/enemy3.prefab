@@ -73,7 +73,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 7
   m_Sprite: {fileID: 21300000, guid: 3b41895c1ff0e4ff9afb69e65a3e44c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -116,10 +116,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c1f8af5ef66549459348a826079ccb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyType: 2
   speed: 3
   hp: 3
   score: 0
-  enemyType: 2
+  laser: {fileID: 5417974003479268834, guid: 535dcaba67008e147b51cd615528a3e9, type: 3}
 --- !u!60 &-5498385132126065099
 PolygonCollider2D:
   m_ObjectHideFlags: 0

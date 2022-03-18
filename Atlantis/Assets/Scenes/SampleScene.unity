@@ -1051,7 +1051,7 @@ MonoBehaviour:
   enemy1: {fileID: 6910182347525769715, guid: 764fad06f13811140ad2984f2de0370d, type: 3}
   enemy2: {fileID: 3928745177215817457, guid: 9983dfcc2e2df2a41abd55428ef2177d, type: 3}
   enemy3: {fileID: 105776520162852263, guid: 0dce46dfb9cac074aa53aa21ac1fa105, type: 3}
-  intervalBasic: 5
+  intervalBasic: 1
 --- !u!114 &2083931713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1128,6 +1128,10 @@ PrefabInstance:
     - target: {fileID: 6116842775259704596, guid: 58220059b1c5f0543a1d5dce1af98dd3, type: 3}
       propertyPath: m_Name
       value: Turret1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116842775259704596, guid: 58220059b1c5f0543a1d5dce1af98dd3, type: 3}
+      propertyPath: m_TagString
+      value: Turret
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58220059b1c5f0543a1d5dce1af98dd3, type: 3}
