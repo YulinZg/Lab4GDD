@@ -20,19 +20,20 @@ public class Building : MonoBehaviour
         explosionController = GameObject.FindGameObjectWithTag("GameController").GetComponent<ExplosionController>();
     }
 
-    public void HittingByEnemy()
-    { 
+    public void Hitten()
+    {
+        GetComponent<BoxCollider2D>().enabled = false;
         StartCoroutine(DoBlink(2, 40));
         switch (buildType)
         {
             case BuildType.side:
-                explosionController.Explosion(transform.position + new Vector3(0, 0.4f, 0), 0.8f, 0.6f, 2.0f);
+                explosionController.Explosion(transform.position + new Vector3(0, 0.4f, 0), 0.8f, 0.6f, 20, 2.0f);
                 break;
             case BuildType.middle:
-                explosionController.Explosion(transform.position + new Vector3(0, 1.0f, 0), 0.9f, 0.4f, 2.0f);
+                explosionController.Explosion(transform.position + new Vector3(0, 1.0f, 0), 0.9f, 0.4f, 20, 2.0f);
                 break;
             case BuildType.inner:
-                explosionController.Explosion(transform.position + new Vector3(0, 1.4f, 0), 0.6f, 0.5f, 2.0f);
+                explosionController.Explosion(transform.position + new Vector3(0, 1.4f, 0), 0.6f, 0.5f, 20, 2.0f);
                 break;
         }
     }
@@ -41,7 +42,7 @@ public class Building : MonoBehaviour
     {
         for (int i = 0; i < blinkNum; i++)
         {
-            gameObject.GetComponent<SpriteRenderer>().enabled = !gameObject.GetComponent<SpriteRenderer>().enabled;
+            GetComponent<SpriteRenderer>().enabled = !GetComponent<SpriteRenderer>().enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
         Destroy(gameObject);
