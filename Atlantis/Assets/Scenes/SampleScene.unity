@@ -1001,10 +1001,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2083931710}
   - component: {fileID: 2083931712}
+  - component: {fileID: 2083931713}
   - component: {fileID: 2083931711}
   m_Layer: 0
-  m_Name: GameManagement
-  m_TagString: Untagged
+  m_Name: GameController
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1051,6 +1052,24 @@ MonoBehaviour:
   enemy2: {fileID: 3928745177215817457, guid: 9983dfcc2e2df2a41abd55428ef2177d, type: 3}
   enemy3: {fileID: 105776520162852263, guid: 0dce46dfb9cac074aa53aa21ac1fa105, type: 3}
   intervalBasic: 5
+--- !u!114 &2083931713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2083931709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d1c320c6c09bdb409155591835a3775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects:
+  - {fileID: 7667415986954790743, guid: cbd21d855e1f0b34d83ad1707b2c2dca, type: 3}
+  - {fileID: 6794140952215992361, guid: 407670376d92860478b8fd012f320b39, type: 3}
+  - {fileID: 1852148551899890852, guid: a47b2c1c70b924e47a5a4bac003e1990, type: 3}
+  - {fileID: 7580087357828888092, guid: 54e86d669a1e45443a7cc415b6a63a0c, type: 3}
+  - {fileID: 4210425494141824141, guid: 2ef91061bb91b9d418990cf360efaadb, type: 3}
 --- !u!1001 &534399647615554747
 PrefabInstance:
   m_ObjectHideFlags: 0
