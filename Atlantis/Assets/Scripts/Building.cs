@@ -4,109 +4,36 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
-    [SerializeField] private GameObject[] explodeEffect;
-    [SerializeField] private BuildType buildType;
-
     private enum BuildType
     {
         side,
         middle,
         inner
     };
+    [SerializeField] private BuildType buildType;
 
+    private ExplosionController explosionController;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        explosionController = GameObject.FindGameObjectWithTag("GameController").GetComponent<ExplosionController>();
+    }
 
     public void HittingByEnemy()
     { 
         StartCoroutine(DoBlink(2, 40));
-        if (buildType == BuildType.side)
+        switch (buildType)
         {
-            for (int i = 0; i < 8; i++)
-            {
-                int a = Random.Range(0, 5);
-                float newY;
-                float newX;
-                if (i < 2){
-                    newY = Random.Range(0.5f, 1f);
-                    newX = Random.Range(-0.7f, 0f);
-                }
-                else if( i < 4)
-                {
-                    newY = Random.Range(0.5f, 1f);
-                    newX = Random.Range(0f, 0.7f);
-                }
-                else if (i < 6)
-                {
-                    newY = Random.Range(0f, 0.5f);
-                    newX = Random.Range(-0.7f, 0f);
-                }
-                else
-                {
-                    newY = Random.Range(0f, 0.5f);
-                    newX = Random.Range(0f, 0.7f);
-                }
-                Instantiate(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
-            }
-           
-        }
-        else if(buildType == BuildType.middle)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                int a = Random.Range(0, 5);
-                float newY;
-                float newX;
-                if (i < 2)
-                {
-                    newY = Random.Range(0.5f, 1f);
-                    newX = Random.Range(-0.8f, 0f);
-                }
-                else if (i < 4)
-                {
-                    newY = Random.Range(0.5f, 1f);
-                    newX = Random.Range(0f, 0.8f);
-                }
-                else if (i < 6)
-                {
-                    newY = Random.Range(1f, 1.5f);
-                    newX = Random.Range(-0.8f, 0f);
-                }
-                else
-                {
-                    newY = Random.Range(1f, 1.5f);
-                    newX = Random.Range(0f, 0.8f);
-                }
-                Instantiate(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
-            }
-        }
-        else if (buildType == BuildType.inner)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                int a = Random.Range(0, 5);
-                float newY;
-                float newX;
-                if (i < 2)
-                {
-                    newY = Random.Range(1f, 1.5f);
-                    newX = Random.Range(-0.5f, 0f);
-                }
-                else if (i < 4)
-                {
-                    newY = Random.Range(1f, 1.5f);
-                    newX = Random.Range(0f, 0.5f);
-                }
-                else if (i < 6)
-                {
-                    newY = Random.Range(1.5f, 2f);
-                    newX = Random.Range(-0.5f, 0f);
-                }
-                else
-                {
-                    newY = Random.Range(1.5f, 2f);
-                    newX = Random.Range(0f, 0.5f);
-                }
-                Instantiate(explodeEffect[a], transform.position + new Vector3(newX, newY, 0), Quaternion.identity);
-            }
+            case BuildType.side:
+                explosionController.Explosion(transform.position + new Vector3(0, 0.4f, 0), 0.8f, 0.6f, 2.0f);
+                break;
+            case BuildType.middle:
+                explosionController.Explosion(transform.position + new Vector3(0, 1.0f, 0), 0.9f, 0.4f, 2.0f);
+                break;
+            case BuildType.inner:
+                explosionController.Explosion(transform.position + new Vector3(0, 1.4f, 0), 0.6f, 0.5f, 2.0f);
+                break;
         }
     }
 
