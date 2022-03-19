@@ -22,13 +22,23 @@ public class Turret : MonoBehaviour
     private bool isAlive = true;
     private ExplosionController explosionController;
     private GameObject shield;
+    private SpriteRenderer shieldSprite;
+    private SpriteRenderer[] childSprites;
 
     // Start is called before the first frame update
     void Start()
     {
         explosionController = GameObject.FindGameObjectWithTag("GameController").GetComponent<ExplosionController>();
         shield = GameObject.FindGameObjectWithTag("Shield");
-        shield.GetComponent<SpriteRenderer>().enabled = true;
+        shieldSprite = shield.GetComponent<SpriteRenderer>();
+        shieldSprite.enabled = true;
+        childSprites = GetComponentsInChildren<SpriteRenderer>();
+        foreach (GameObject building in GameObject.FindGameObjectsWithTag("Building"))
+        {
+            building.GetComponent<BoxCollider2D>().enabled = false;
+        }
+        if (transform.position.y == -2)
+            isMiddle = true;
     }
 
     // Update is called once per frame
@@ -136,22 +146,23 @@ public class Turret : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         StartCoroutine(DoBlink(2, 40));
         explosionController.Explosion(transform.position + new Vector3(0, -0.3f, 0), 0.8f, 0.7f, 20, 2.0f);
+
     }
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)
     {
         for (int i = 0; i < blinkNum; i++)
         {
-            foreach (Transform child in transform)
-                child.GetComponent<SpriteRenderer>().enabled = !child.GetComponent<SpriteRenderer>().enabled;
-            shield.GetComponent<SpriteRenderer>().enabled = !shield.GetComponent<SpriteRenderer>().enabled;
+            foreach (SpriteRenderer sprite in childSprites)
+                sprite.enabled = !sprite.enabled;
+            shieldSprite.enabled = !shieldSprite.enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
-        shield.GetComponent<SpriteRenderer>().enabled = false;
-        GameObject[] buildings = GameObject.FindGameObjectsWithTag("Building");
-        foreach (GameObject building in buildings)
+        shieldSprite.enabled = false;
+        foreach (GameObject building in GameObject.FindGameObjectsWithTag("Building"))
         {
-            building.GetComponent<BoxCollider2D>().enabled = true;
+            if(building)
+                building.GetComponent<BoxCollider2D>().enabled = true;
         }
         Destroy(gameObject);
     }

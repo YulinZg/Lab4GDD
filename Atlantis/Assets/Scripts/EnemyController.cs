@@ -7,21 +7,21 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject enemy1;
     [SerializeField] private GameObject enemy2;
     [SerializeField] private GameObject enemy3;
-    [SerializeField] private float intervalBasic;
+    public float intervalBasic { get; set; } = 1;
 
     private float timer;
 
-    // Start is called before the first frame update
-    void Start()
+    // Start is called before the first frame updat
+
+    private void OnEnable()
     {
         SpawnEnemy();
     }
-
     // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= Interval())
+        if (timer >= intervalBasic)
         {
             SpawnEnemy();
             timer = 0;
@@ -38,10 +38,5 @@ public class EnemyController : MonoBehaviour
             Instantiate(enemy1, new Vector3(x, Random.Range(0, 4.0f), 0), Quaternion.identity);
         else
             Instantiate(enemy2, new Vector3(x, Random.Range(0, 4.0f), 0), Quaternion.identity);
-    }
-
-    private float Interval()
-    {
-        return intervalBasic;
     }
 }
