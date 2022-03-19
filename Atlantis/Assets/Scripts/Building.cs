@@ -10,6 +10,9 @@ public class Building : MonoBehaviour
     private SpriteRenderer sprite;
     private bool isAlive = true;
 
+    private AudioSource audioSource;
+    [SerializeField] private AudioClip audioClip;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +30,7 @@ public class Building : MonoBehaviour
             buildingNumber = 4;
         else if (transform.position.x == 6)
             buildingNumber = 5;
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void Hitten()
@@ -51,6 +55,8 @@ public class Building : MonoBehaviour
                     explosionController.Explosion(transform.position + new Vector3(0, 1.4f, 0), 0.6f, 0.5f, 20, 2.0f);
                     break;
             }
+            audioSource.clip = audioClip;
+            audioSource.Play();
         }
     }
 

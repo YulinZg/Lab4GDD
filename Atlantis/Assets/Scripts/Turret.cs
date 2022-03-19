@@ -29,6 +29,9 @@ public class Turret : MonoBehaviour
     private SpriteRenderer shieldSprite;
     private SpriteRenderer[] childSprites;
 
+    private AudioSource audioSource;
+    [SerializeField] private AudioClip[] audioClips;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,6 +43,7 @@ public class Turret : MonoBehaviour
         {
             building.GetComponent<BoxCollider2D>().enabled = false;
         }
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -148,6 +152,8 @@ public class Turret : MonoBehaviour
             bulletInstance.transform.parent = transform;
             bulletInstance.transform.Rotate(0, 0, -90.0f);
             count++;
+            audioSource.clip = audioClips[0];
+            audioSource.Play();
         }
     }
 
@@ -157,6 +163,8 @@ public class Turret : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         StartCoroutine(DoBlink(2, 40));
         explosionController.Explosion(transform.position + new Vector3(0, -0.3f, 0), 0.8f, 0.7f, 20, 2.0f);
+        audioSource.clip = audioClips[1];
+        audioSource.Play();
     }
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)

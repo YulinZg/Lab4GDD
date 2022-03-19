@@ -24,6 +24,9 @@ public class Enemy : MonoBehaviour
     private bool isAlive = true;
     private ExplosionController explosionController;
 
+    private AudioSource[] audioSources;
+    [SerializeField] private AudioClip[] audioClips;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,6 +51,8 @@ public class Enemy : MonoBehaviour
         speed += GameManagement.Instance.wave * 0.5f;
         if (speed > maxSpeed)
             speed = maxSpeed;
+
+        audioSources = GetComponents<AudioSource>();
     }
 
     // Update is called once per frame
@@ -86,11 +91,18 @@ public class Enemy : MonoBehaviour
             }
             isAlive = false;
             gameObject.GetComponent<PolygonCollider2D>().enabled = false;
-            StartCoroutine(DoBlink(0.2f, 4));
+            if (transform.childCount > 0)
+                foreach (Transform child in transform)
+                    Destroy(child.gameObject);
+            StartCoroutine(DoBlink(0.5f, 10));
             GameManagement.Instance.IncreaseScore(score);
+            audioSources[0].clip = audioClips[0];
+            audioSources[0].Play();
         }
         else
-            StartCoroutine(DoBlink(0.1f, 2));
+            StartCoroutine(DoBlink(0.2f, 4));
+        audioSources[1].clip = audioClips[1];
+        audioSources[1].Play();
     }
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)
@@ -101,6 +113,14 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
         if (hp == 0)
-            Destroy(gameObject);
+        {
+            GetComponent<SpriteRenderer>().enabled = false;
+            Invoke(nameof(Disappear), 1.0f);
+        }
+    }
+
+    void Disappear()
+    {
+        Destroy(gameObject);
     }
 }

@@ -57,6 +57,9 @@ public class GameManagement : MonoBehaviour
     public Stack<int> buildingNumbers = new Stack<int>();
     public int buildingCount { get; set; } = 6;
 
+    private AudioSource[] audioSources;
+    public AudioClip[] audioClips;
+
     private void Awake()
     {
         Instance = this;
@@ -68,6 +71,9 @@ public class GameManagement : MonoBehaviour
         if (PlayerPrefs.HasKey("score"))
             highestScore.text = "Highest Score: " + PlayerPrefs.GetInt("score");
         enemyController = GetComponent<EnemyController>();
+        audioSources = GetComponents<AudioSource>();
+        audioSources[0].clip = audioClips[0];
+        audioSources[0].Play();
     }
 
     // Update is called once per frame
@@ -88,6 +94,8 @@ public class GameManagement : MonoBehaviour
                 introPanel.SetActive(false);
                 scorePanel.SetActive(true);
                 currentStage = Stage.wait;
+                audioSources[0].clip = audioClips[1];
+                audioSources[0].Play();
             }
         }
         if (Input.GetKeyDown(KeyCode.Return) && isMenu)
@@ -200,12 +208,16 @@ public class GameManagement : MonoBehaviour
             turrentInstance.tag = "Turret";
             turrentInstance.GetComponent<Turret>().leftAlt = leftAlt;
             turrentInstance.GetComponent<Turret>().rightAlt = rightAlt;
+            audioSources[1].clip = audioClips[2];
+            audioSources[1].Play();
         }
         else if(GameObject.FindGameObjectWithTag("Turret") && buildingCount < 6)
         {
             buildingCount++;
             GameObject building = buildings[buildingNumbers.Pop()];
             Instantiate(building, building.transform.position, building.transform.rotation);
+            audioSources[1].clip = audioClips[2];
+            audioSources[1].Play();
         }
     }
 
@@ -220,6 +232,7 @@ public class GameManagement : MonoBehaviour
         SetHighestScore();
         loseScore.text = "Your Score is: " + score;
         loseHighestScore.text = "The Highest Score is: " + PlayerPrefs.GetInt("score");
+        audioSources[0].Stop();
     }
 
     public void StartGame()
