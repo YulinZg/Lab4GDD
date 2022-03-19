@@ -16,7 +16,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int hp = 1;
     [SerializeField] private int score;
     [SerializeField] private GameObject laser;
+    [SerializeField] private float decreasingTime = 1.0f;
 
+    private float timer = 0f;
     private int dir;
     private bool isAlive = true;
     private ExplosionController explosionController;
@@ -31,7 +33,7 @@ public class Enemy : MonoBehaviour
             dir = -1;
         transform.localScale = new Vector3(transform.localScale.x * dir, transform.localScale.y, transform.localScale.x);
         int a = Random.Range(0, 10);
-        if (a == 0)
+        if (a < 0)
         {
             GameObject laserInstance = Instantiate(laser, new Vector3(transform.position.x,  transform.position.y - (transform.position.y + 6.0f) * 0.5f, 0), transform.rotation);
             laserInstance.transform.parent = transform;
@@ -44,7 +46,15 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         if (isAlive)
+        {
             transform.position += dir * speed * Time.deltaTime * Vector3.right;
+            timer += Time.deltaTime;
+            if(timer >= decreasingTime)
+            {
+                timer = 0f;
+                score = (int)(score * 9 / 10);
+            }
+        }   
         if (transform.position.x > 11.5f || transform.position.x < -11.5f)
             Destroy(gameObject);
     }
@@ -69,6 +79,7 @@ public class Enemy : MonoBehaviour
             isAlive = false;
             gameObject.GetComponent<PolygonCollider2D>().enabled = false;
             StartCoroutine(DoBlink(0.2f, 4));
+            GameManagement.Instance.increaseScore(score);
         }
         else
             StartCoroutine(DoBlink(0.1f, 2));
