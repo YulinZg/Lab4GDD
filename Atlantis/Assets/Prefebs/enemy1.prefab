@@ -117,10 +117,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
-  speed: 5
+  speed: 3
+  maxSpeed: 6
   hp: 1
-  score: 500
+  score: 750
   laser: {fileID: 5417974003479268834, guid: 535dcaba67008e147b51cd615528a3e9, type: 3}
+  decreaseTime: 1
 --- !u!60 &-1817404353945435549
 PolygonCollider2D:
   m_ObjectHideFlags: 0

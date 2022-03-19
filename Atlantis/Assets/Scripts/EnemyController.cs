@@ -7,7 +7,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private GameObject enemy1;
     [SerializeField] private GameObject enemy2;
     [SerializeField] private GameObject enemy3;
-    public float intervalBasic { get; set; } = 1;
+    public float interval { get; set; } = 1;
 
     private float timer;
 
@@ -15,13 +15,15 @@ public class EnemyController : MonoBehaviour
 
     private void OnEnable()
     {
+        timer = 0;
         SpawnEnemy();
     }
+
     // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= intervalBasic)
+        if (timer >= interval)
         {
             SpawnEnemy();
             timer = 0;

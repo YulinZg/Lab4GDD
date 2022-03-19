@@ -13,10 +13,11 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private EnemyType enemyType;
     [SerializeField] private float speed;
+    [SerializeField] private float maxSpeed;
     [SerializeField] private int hp = 1;
     [SerializeField] private int score;
     [SerializeField] private GameObject laser;
-    [SerializeField] private float decreasingTime = 1.0f;
+    [SerializeField] private float decreaseTime = 1.0f;
 
     private float timer = 0f;
     private int dir;
@@ -32,14 +33,21 @@ public class Enemy : MonoBehaviour
         else
             dir = -1;
         transform.localScale = new Vector3(transform.localScale.x * dir, transform.localScale.y, transform.localScale.x);
-        int a = Random.Range(0, 10);
-        if (a < 0)
+        int i = Random.Range(0, 10);
+        float a = 0;
+        a += GameManagement.Instance.wave * 0.5f;
+        if (a > 4.0f)
+            a = 4.0f;
+        if (i <= a)
         {
-            GameObject laserInstance = Instantiate(laser, new Vector3(transform.position.x,  transform.position.y - (transform.position.y + 6.0f) * 0.5f, 0), transform.rotation);
+            GameObject laserInstance = Instantiate(laser, new Vector3(transform.position.x,  transform.position.y - (transform.position.y + 7.0f) * 0.5f, 0), transform.rotation);
             laserInstance.transform.parent = transform;
             laserInstance.transform.Rotate(0, 0, -90.0f);
-            laserInstance.transform.localScale = new Vector3(transform.position.y + 7.0f, laser.transform.localScale.y, 1.0f);
+            laserInstance.transform.localScale = new Vector3(transform.position.y + 10.0f, laser.transform.localScale.y, 1.0f);
         }
+        speed += GameManagement.Instance.wave * 0.5f;
+        if (speed > maxSpeed)
+            speed = maxSpeed;
     }
 
     // Update is called once per frame
@@ -49,10 +57,10 @@ public class Enemy : MonoBehaviour
         {
             transform.position += dir * speed * Time.deltaTime * Vector3.right;
             timer += Time.deltaTime;
-            if(timer >= decreasingTime)
+            if(timer >= decreaseTime)
             {
-                timer = 0f;
-                score = (int)(score * 9 / 10);
+                score = (int)(score * 0.9f);
+                timer = 0;
             }
         }   
         if (transform.position.x > 11.5f || transform.position.x < -11.5f)
@@ -79,7 +87,7 @@ public class Enemy : MonoBehaviour
             isAlive = false;
             gameObject.GetComponent<PolygonCollider2D>().enabled = false;
             StartCoroutine(DoBlink(0.2f, 4));
-            GameManagement.Instance.increaseScore(score);
+            GameManagement.Instance.IncreaseScore(score);
         }
         else
             StartCoroutine(DoBlink(0.1f, 2));
