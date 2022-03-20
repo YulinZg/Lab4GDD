@@ -116,6 +116,8 @@ public class GameManagement : MonoBehaviour
             }
             GameLoopControl();
         }
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 
     private IEnumerator TypeText(string text, float duration)
