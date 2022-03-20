@@ -24,6 +24,7 @@ public class GameManagement : MonoBehaviour
     public Text intro;
     public Text hint;
     public Text scoreText;
+    public Text pointText;
     public Text waveCounter;
     public Text stageIntro;
     public Text highestScore;
@@ -46,7 +47,6 @@ public class GameManagement : MonoBehaviour
 
     private int score = 0;
     private int point = 0;
-    private int rebuildChance = 0;
     private EnemyController enemyController;
     private float gameLoopTimer;
     private float scoreTimer;
@@ -135,11 +135,6 @@ public class GameManagement : MonoBehaviour
         switch (currentStage)
         {
             case Stage.wait:
-                while (rebuildChance > 0)
-                {
-                    Rebuild();
-                    rebuildChance--;
-                }
                 SwitchStage(3f, Stage.smallWave, true);
                 break;
             case Stage.smallWave:
@@ -193,32 +188,32 @@ public class GameManagement : MonoBehaviour
         score += num;
         point += num;
         scoreText.text = "Score: " + score;
-        if(point >= 10000)
-        {
-            rebuildChance++;
-            point -= 10000;
-        }
+        Rebuild();
+        pointText.text = "Point: " + point;
     }
 
     public void Rebuild()
     {
-        if (!GameObject.FindGameObjectWithTag("Turret"))
-        {
-            GameObject turrentInstance = Instantiate(turret, new Vector3(0, -2, 0), Quaternion.identity);
-            turrentInstance.tag = "Turret";
-            turrentInstance.GetComponent<Turret>().leftAlt = leftAlt;
-            turrentInstance.GetComponent<Turret>().rightAlt = rightAlt;
-            audioSources[1].clip = audioClips[2];
-            audioSources[1].Play();
-        }
-        else if(GameObject.FindGameObjectWithTag("Turret") && buildingCount < 6)
-        {
-            buildingCount++;
-            GameObject building = buildings[buildingNumbers.Pop()];
-            Instantiate(building, building.transform.position, building.transform.rotation);
-            audioSources[1].clip = audioClips[2];
-            audioSources[1].Play();
-        }
+        if (point >= 10000)
+            if (!GameObject.FindGameObjectWithTag("Turret"))
+            {
+                point -= 10000;
+                GameObject turrentInstance = Instantiate(turret, new Vector3(0, -2, 0), Quaternion.identity);
+                turrentInstance.tag = "Turret";
+                turrentInstance.GetComponent<Turret>().leftAlt = leftAlt;
+                turrentInstance.GetComponent<Turret>().rightAlt = rightAlt;
+                audioSources[1].clip = audioClips[2];
+                audioSources[1].Play();
+            }
+            else if(GameObject.FindGameObjectWithTag("Turret") && buildingCount < 6)
+            {
+                point -= 10000;
+                buildingCount++;
+                GameObject building = buildings[buildingNumbers.Pop()];
+                Instantiate(building, building.transform.position, building.transform.rotation);
+                audioSources[1].clip = audioClips[2];
+                audioSources[1].Play();
+            }
     }
 
     public void Lose()
