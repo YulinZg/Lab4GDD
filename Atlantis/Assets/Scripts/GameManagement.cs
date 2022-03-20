@@ -7,237 +7,262 @@ using UnityEngine.SceneManagement;
 public class GameManagement : MonoBehaviour
 {
     public static GameManagement Instance { get; private set; }
-    public int buildingNumber { get; set; } = 6;
 
-    private void Awake()
-    {
-        Instance = this;
-  
-    }
     public enum Stage
     {
         none,
         wait,
         smallWave,
-        bigWave,
-        relex
+        bigWave
     }
 
     [Header("UI")]
+    public GameObject menuPanel;
     public GameObject introPanel;
     public GameObject losePanel;
+    public GameObject scorePanel;
     public Text intro;
-    public Text howToPlay;
     public Text hint;
-    public Text score;
-    public Text gameLoopCounter;
+    public Text scoreText;
+    public Text waveCounter;
     public Text stageIntro;
-    public string showDialog;
-    public string howToPlayDialog;
+    public Text highestScore;
+    public Text loseScore;
+    public Text loseHighestScore;
+    public string dialog;
 
-    private bool isFirstPage;
     private bool isTyping;
+    private bool isMenu = true;
+    private bool isIntro = true;
 
     [Header("GameFlow")]
-    private int scoreCounter = 0;
-    private int numOfTenThousand = 0;
     public Stage currentStage;
+    public float smallWaveTime;
+    public float bigWaveTime;
+    public int wave { get; private set; } = 1;
+    public bool isLose { get; private set; } = false;
+    public bool leftAlt { get; set; } = false;
+    public bool rightAlt { get; set; } = false;
+
+    private int score = 0;
+    private int point = 0;
+    private int rebuildChance = 0;
     private EnemyController enemyController;
-    private float gameLoopTime;
+    private float gameLoopTimer;
+    private float scoreTimer;
 
     [Header("Building")]
     public GameObject turret;
     public GameObject[] buildings;
-    public Queue<Vector3> buildingsPos = new Queue<Vector3>();
+    public Stack<int> buildingNumbers = new Stack<int>();
+    public int buildingCount { get; set; } = 6;
+
+    private AudioSource[] audioSources;
+    public AudioClip[] audioClips;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        //StartCoroutine(gameLoop(3));
-        
-        Time.timeScale = 1;
-        introPanel.SetActive(true);
-        StartCoroutine(typeText(showDialog, 5f, 1));
-        enemyController = gameObject.GetComponent<EnemyController>();
-        stageIntro.enabled = false;
-        gameLoopCounter.enabled = false;
-        //foreach (GameObject building in GameObject.FindGameObjectsWithTag("Building"))
-        //{
-        //    buildings.Add(building);
-        //}
-        //foreach (var t in buildingsTransform)
-        //{
-        //    Debug.Log(t.position);
-        //}
-
+        if (PlayerPrefs.HasKey("score"))
+            highestScore.text = "Highest Score: " + PlayerPrefs.GetInt("score");
+        enemyController = GetComponent<EnemyController>();
+        audioSources = GetComponents<AudioSource>();
+        audioSources[0].clip = audioClips[0];
+        audioSources[0].Play();
     }
 
-    private IEnumerator typeText(string dialogText, float duration, int pageNum)
+    // Update is called once per frame
+    void Update()
+    {
+        if (!isMenu && isIntro)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) && isTyping)
+            {
+                StopAllCoroutines();
+                intro.text = dialog;
+                hint.text = "Press Enter To Continue";
+                isTyping = false;
+            }
+            else if (Input.GetKeyDown(KeyCode.Return) && !isTyping)
+            {
+                isIntro = false;
+                introPanel.SetActive(false);
+                scorePanel.SetActive(true);
+                currentStage = Stage.wait;
+                audioSources[0].clip = audioClips[1];
+                audioSources[0].Play();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Return) && isMenu)
+        {
+            StartGame();
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+            Restart();
+        if (Input.GetKeyDown(KeyCode.Q))
+            Quit();
+        if (!isLose && !isIntro)
+        {
+            scoreTimer += Time.deltaTime;
+            if (scoreTimer >= 1.0f)
+            {
+                IncreaseScore(50);
+                scoreTimer = 0;
+            }
+            GameLoopControl();
+        }
+    }
+
+    private IEnumerator TypeText(string text, float duration)
     {
         isTyping = true;
-        isFirstPage = (pageNum == 1);
-
-        if (isFirstPage)
+        foreach (char c in text.ToCharArray())
         {
-            foreach (char c in dialogText.ToCharArray())
-            {
-                intro.text += c;
-                yield return new WaitForSeconds(duration / dialogText.ToCharArray().Length);
-            }
-            hint.text = "Press Enter To Continue";
+            intro.text += c;
+            yield return new WaitForSeconds(duration / text.ToCharArray().Length);
         }
-        else
-        {
-            foreach (char c in dialogText.ToCharArray())
-            {
-                howToPlay.text += c;
-                yield return new WaitForSeconds(duration / dialogText.ToCharArray().Length);
-            }
-            hint.text = "Press Enter To Start";
-
-        }   
+        hint.text = "Press Enter To Continue";
         isTyping = false;
-
     }
 
-    private void Update()
-    {
-        
-        //if (Input.GetKeyDown(KeyCode.R))
-        //    reBuild();
-        if (Input.GetKeyDown(KeyCode.Return) && isTyping && isFirstPage)
-        {
-            StopAllCoroutines();
-            intro.text = showDialog;
-            hint.text = "Press Enter To Continue";
-            isTyping = false;
-            
-        }
-        else if (Input.GetKeyDown(KeyCode.Return) && !isTyping && isFirstPage)
-        {
-            intro.enabled = false;
-            hint.text = "Press Enter To Skip";
-            StartCoroutine(typeText(howToPlayDialog, 5f, 2));
-        }
-        else if (Input.GetKeyDown(KeyCode.Return) && isTyping && !isFirstPage)
-        {
-            StopAllCoroutines();
-            howToPlay.text = howToPlayDialog;
-            hint.text = "Press Enter To Start";
-            isTyping = false;
-        }
-        else if (Input.GetKeyDown(KeyCode.Return) && !isTyping && !isFirstPage)
-        {
-            //enemyController.enabled = true;
-            currentStage = Stage.wait;
-            introPanel.SetActive(false);
-        }
-        gameLoopControl();
-    }
-
-    private void gameLoopControl()
+    private void GameLoopControl()
     {
         switch (currentStage)
         {
             case Stage.wait:
-                //enemyController.enabled = false;
-                switchStage(3, Stage.smallWave, "Small wave of Enemy is coming", true);
+                while (rebuildChance > 0)
+                {
+                    Rebuild();
+                    rebuildChance--;
+                }
+                SwitchStage(3f, Stage.smallWave, true);
                 break;
             case Stage.smallWave:
-                //enemyController.enabled = true;
-                enemyController.intervalBasic = 3;
-                switchStage(20, Stage.bigWave, "Big wave of Enemy is coming", true);
+                enemyController.interval = 3;
+                SwitchStage(smallWaveTime, Stage.bigWave, true);
                 break;
             case Stage.bigWave:
-                //enemyController.enabled = true;
-                enemyController.intervalBasic = 1;
-                switchStage(20, Stage.relex, "Next round will rebuild your buildings (10000 score for one building)", false);
-                break;
-            case Stage.relex:
-                while(numOfTenThousand > 0)
-                {
-                    reBuild();
-                    numOfTenThousand--;
-                }
-                switchStage(8, Stage.smallWave, "Small wave of Enemy is coming", true);
+                enemyController.interval = 1;
+                SwitchStage(bigWaveTime, Stage.wait, false);
                 break;
             default:
                 break;
         }
     }
 
-    private void switchStage(int waitTime, Stage nextStage, string showText, bool nextStageEnemyControllerEnable)
+    private void SwitchStage(float stageTime, Stage nextStage, bool ifSpawnEnemyNextStage)
     {
-        gameLoopTime += Time.deltaTime;
-        if(waitTime - Mathf.Floor(gameLoopTime) <= 3)
+        gameLoopTimer += Time.deltaTime;
+        if(stageTime - gameLoopTimer <= 3f)
         {
-            gameLoopCounter.enabled = true;
             enemyController.enabled = false;
-            stageIntro.enabled = true;
-            stageIntro.text = showText;
-            gameLoopCounter.text = (waitTime - Mathf.Floor(gameLoopTime)).ToString();
+            if (currentStage == Stage.wait)
+            {
+                stageIntro.enabled = true;
+                stageIntro.text = "Wave " + wave;
+                waveCounter.enabled = true;
+                waveCounter.text = (Mathf.Floor(stageTime - gameLoopTimer) + 1).ToString();
+            }
+            else if (currentStage == Stage.smallWave)
+            {
+                stageIntro.enabled = true;
+                stageIntro.text = "Warning: A group of enemy is coming!";
+            }
         }
-        if (gameLoopTime >= waitTime)
+        if (gameLoopTimer >= stageTime)
         {
+            if (currentStage == Stage.wait)
+                wave++;
+            else if (currentStage == Stage.bigWave)
+                IncreaseScore(1000 * buildingCount);
             currentStage = nextStage;
-            enemyController.enabled = nextStageEnemyControllerEnable;
-            gameLoopCounter.enabled = false;
+            enemyController.enabled = ifSpawnEnemyNextStage;
+            waveCounter.enabled = false;
             stageIntro.enabled = false;
-            gameLoopTime = 0;
+            gameLoopTimer = 0;
         }
-
     }
-    public void increaseScore(int point)
+
+    public void IncreaseScore(int num)
     {
-        score.text = (int.Parse(score.text) + point).ToString();
-        scoreCounter += point;
-        if(scoreCounter >= 10000)
+        score += num;
+        point += num;
+        scoreText.text = "Score: " + score;
+        if(point >= 10000)
         {
-            scoreCounter -= 10000;
-            numOfTenThousand += 1;
+            rebuildChance++;
+            point -= 10000;
         }
     }
 
-    public int getScore()
-    {
-        return int.Parse(score.text);
-    }
-    public void reBuild()
+    public void Rebuild()
     {
         if (!GameObject.FindGameObjectWithTag("Turret"))
-            Instantiate<GameObject>(turret, new Vector3(0, -2, 0), Quaternion.identity).tag = "Turret";
-        else if(GameObject.FindGameObjectWithTag("Turret") && buildingNumber < 6)
         {
-            buildingNumber++;
-            Vector3 temp = buildingsPos.Dequeue();
-            if (temp.x == -6)
-                Instantiate(buildings[0], temp, Quaternion.Euler(0, 0, 180f));
-            else if (temp.x == -4)
-                Instantiate(buildings[1], temp, Quaternion.Euler(0, 0, 180f));
-            else if (temp.x == -2)
-                Instantiate(buildings[2], temp, Quaternion.identity);
-            else if (temp.x == 2)
-                Instantiate(buildings[3], temp, Quaternion.identity);
-            else if (temp.x == 4)
-                Instantiate(buildings[4], temp, Quaternion.Euler(0, 0, 180f));
-            else if (temp.x == 6)
-                Instantiate(buildings[5], temp, Quaternion.Euler(0,0,180f));
+            GameObject turrentInstance = Instantiate(turret, new Vector3(0, -2, 0), Quaternion.identity);
+            turrentInstance.tag = "Turret";
+            turrentInstance.GetComponent<Turret>().leftAlt = leftAlt;
+            turrentInstance.GetComponent<Turret>().rightAlt = rightAlt;
+            audioSources[1].clip = audioClips[2];
+            audioSources[1].Play();
         }
-        
-    }
-    public void lose()
-    {
-        losePanel.SetActive(true);
-        Time.timeScale = 0;
+        else if(GameObject.FindGameObjectWithTag("Turret") && buildingCount < 6)
+        {
+            buildingCount++;
+            GameObject building = buildings[buildingNumbers.Pop()];
+            Instantiate(building, building.transform.position, building.transform.rotation);
+            audioSources[1].clip = audioClips[2];
+            audioSources[1].Play();
+        }
     }
 
-    public void quit()
+    public void Lose()
     {
-        Application.Quit();
-        //Debug.Log(111);
+        isLose = true;
+        enemyController.enabled = false;
+        waveCounter.enabled = false;
+        stageIntro.enabled = false;
+        scorePanel.SetActive(false);
+        losePanel.SetActive(true);
+        SetHighestScore();
+        loseScore.text = "Your Score is: " + score;
+        loseHighestScore.text = "The Highest Score is: " + PlayerPrefs.GetInt("score");
+        audioSources[0].Stop();
     }
-    public void restart()
+
+    public void StartGame()
     {
+        isMenu = false;
+        menuPanel.SetActive(false);
+        introPanel.SetActive(true);
+        StartCoroutine(TypeText(dialog, 5.0f));
+    }
+
+    public void Restart()
+    {
+        SetHighestScore();
         SceneManager.LoadScene(0);
+    }
+
+    public void Quit()
+    {
+        SetHighestScore();
+        Application.Quit();
+    }
+
+    private void SetHighestScore()
+    {
+        if (PlayerPrefs.HasKey("score"))
+        {
+            if (score > PlayerPrefs.GetInt("score"))
+                PlayerPrefs.SetInt("score", score);
+        }
+        else
+            PlayerPrefs.SetInt("score", score);
     }
 }

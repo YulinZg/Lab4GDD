@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
+    public enum Pos
+    {
+        middle,
+        left,
+        right
+    };
+
+    public Pos pos;
     [SerializeField] private GameObject bullet;
-    [SerializeField] public bool isMiddle = false;
-    [SerializeField] private bool isLeft = false;
-    [SerializeField] private bool isRight = false;
     [SerializeField] private float coolDown;
 
     //private bool alt = false;
@@ -15,30 +20,30 @@ public class Turret : MonoBehaviour
     private int count = 0;
     private float shootTimer;
     private bool canShoot = false;
-    private bool leftAlt = false;
-    private bool rightAlt = false;
+    public bool leftAlt { get; set; } = false;
+    public bool rightAlt { get; set; } = false;
     private bool leftIsDown = false;
     private bool rightIsDown = false;
     private bool isAlive = true;
     private ExplosionController explosionController;
-    private GameObject shield;
     private SpriteRenderer shieldSprite;
     private SpriteRenderer[] childSprites;
+
+    private AudioSource audioSource;
+    [SerializeField] private AudioClip[] audioClips;
 
     // Start is called before the first frame update
     void Start()
     {
         explosionController = GameObject.FindGameObjectWithTag("GameController").GetComponent<ExplosionController>();
-        shield = GameObject.FindGameObjectWithTag("Shield");
-        shieldSprite = shield.GetComponent<SpriteRenderer>();
+        shieldSprite = GameObject.FindGameObjectWithTag("Shield").GetComponent<SpriteRenderer>();
         shieldSprite.enabled = true;
         childSprites = GetComponentsInChildren<SpriteRenderer>();
         foreach (GameObject building in GameObject.FindGameObjectsWithTag("Building"))
         {
             building.GetComponent<BoxCollider2D>().enabled = false;
         }
-        if (transform.position.y == -2)
-            isMiddle = true;
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -87,6 +92,7 @@ public class Turret : MonoBehaviour
             leftIsDown = true;
             leftAlt = true;
             rightAlt = false;
+            SetAlt();
         }
         if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow))
         {
@@ -94,12 +100,14 @@ public class Turret : MonoBehaviour
             leftAlt = false;
             if (rightIsDown)
                 rightAlt = true;
+            SetAlt();
         }
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             rightIsDown = true;
             rightAlt = true;
             leftAlt = false;
+            SetAlt();
         }
         if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow))
         {
@@ -107,23 +115,30 @@ public class Turret : MonoBehaviour
             rightAlt = false;
             if (leftIsDown)
                 leftAlt = true;
+            SetAlt();
         }
 
-        if (isLeft)
-            if (leftAlt)
-                canShoot = true;
-            else
-                canShoot = false;
-        else if (isRight)
-            if (rightAlt)
-                canShoot = true;
-            else
-                canShoot = false;
-        else if (isMiddle)
-            if (!leftAlt && !rightAlt)
-                canShoot = true;
-            else
-                canShoot = false;
+        switch (pos)
+        {
+            case Pos.middle:
+                if (!leftAlt && !rightAlt)
+                    canShoot = true;
+                else
+                    canShoot = false;
+                break;
+            case Pos.left:
+                if (leftAlt)
+                    canShoot = true;
+                else
+                    canShoot = false;
+                break;
+            case Pos.right:
+                if (rightAlt)
+                    canShoot = true;
+                else
+                    canShoot = false;
+                break;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && canShoot && isAlive)
             SpawnBullet();
@@ -131,12 +146,14 @@ public class Turret : MonoBehaviour
 
     void SpawnBullet()
     {
-        if (count < 2)
+        if (count < 2 && !GameManagement.Instance.isLose)
         {
             GameObject bulletInstance = Instantiate(bullet, transform.position, transform.rotation);
             bulletInstance.transform.parent = transform;
             bulletInstance.transform.Rotate(0, 0, -90.0f);
             count++;
+            audioSource.clip = audioClips[0];
+            audioSource.Play();
         }
     }
 
@@ -146,7 +163,8 @@ public class Turret : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         StartCoroutine(DoBlink(2, 40));
         explosionController.Explosion(transform.position + new Vector3(0, -0.3f, 0), 0.8f, 0.7f, 20, 2.0f);
-
+        audioSource.clip = audioClips[1];
+        audioSource.Play();
     }
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)
@@ -165,5 +183,11 @@ public class Turret : MonoBehaviour
                 building.GetComponent<BoxCollider2D>().enabled = true;
         }
         Destroy(gameObject);
+    }
+
+    void SetAlt()
+    {
+        GameManagement.Instance.leftAlt = leftAlt;
+        GameManagement.Instance.rightAlt = rightAlt;
     }
 }
