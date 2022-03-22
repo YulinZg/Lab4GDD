@@ -21,6 +21,9 @@ public class GameManagement : MonoBehaviour
     public GameObject introPanel;
     public GameObject losePanel;
     public GameObject scorePanel;
+    public GameObject pausePanel;
+    public GameObject waveText;
+    public GameObject stageText;
     public Text intro;
     public Text hint;
     public Text scoreText;
@@ -35,6 +38,7 @@ public class GameManagement : MonoBehaviour
     private bool isTyping;
     private bool isMenu = true;
     private bool isIntro = true;
+    private bool isPaused = false;
 
     [Header("GameFlow")]
     public Stage currentStage;
@@ -62,6 +66,7 @@ public class GameManagement : MonoBehaviour
 
     private void Awake()
     {
+        Time.timeScale = 1;
         Instance = this;
     }
 
@@ -99,12 +104,10 @@ public class GameManagement : MonoBehaviour
             }
         }
         if (Input.GetKeyDown(KeyCode.Return) && isMenu)
-        {
             StartGame();
-        }
         if (Input.GetKeyDown(KeyCode.R))
             Restart();
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Escape))
             Quit();
         if (!isLose && !isIntro)
         {
@@ -115,6 +118,7 @@ public class GameManagement : MonoBehaviour
                 scoreTimer = 0;
             }
             GameLoopControl();
+            Pause();
         }
     }
 
@@ -194,7 +198,7 @@ public class GameManagement : MonoBehaviour
 
     public void Rebuild()
     {
-        if (point >= 10000)
+        if (point >= 10000 && !isLose)
             if (!GameObject.FindGameObjectWithTag("Turret"))
             {
                 point -= 10000;
@@ -242,6 +246,32 @@ public class GameManagement : MonoBehaviour
     {
         SetHighestScore();
         SceneManager.LoadScene(0);
+    }
+
+    private void Pause()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+            if (!isPaused)
+            {
+                isPaused = true;
+                pausePanel.SetActive(true);
+                waveText.SetActive(false);
+                stageText.SetActive(false);
+                audioSources[0].Pause();
+                Time.timeScale = 0;
+            }
+            else
+                Continue();
+    }
+
+    public void Continue()
+    {
+        Time.timeScale = 1;
+        isPaused = false;
+        pausePanel.SetActive(false);
+        waveText.SetActive(true);
+        stageText.SetActive(true);
+        audioSources[0].Play();
     }
 
     public void Quit()

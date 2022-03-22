@@ -50,12 +50,15 @@ public class Turret : MonoBehaviour
     void Update()
     {
         Shoot();
-        if (count >= 1)
-            shootTimer += Time.deltaTime;
-        if (shootTimer >= coolDown)
+        if (Time.timeScale == 1)
         {
-            count = 0;
-            shootTimer = 0;
+            if (count >= 1)
+                shootTimer += Time.deltaTime;
+            if (shootTimer >= coolDown)
+            {
+                count = 0;
+                shootTimer = 0;
+            }
         }
     }
 
@@ -140,7 +143,7 @@ public class Turret : MonoBehaviour
                 break;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && canShoot && isAlive)
+        if (Input.GetKeyDown(KeyCode.Space) && canShoot && isAlive && Time.timeScale == 1)
             SpawnBullet();
     }
 
@@ -159,12 +162,15 @@ public class Turret : MonoBehaviour
 
     public void Hitten()
     {
-        isAlive = false;
-        GetComponent<BoxCollider2D>().enabled = false;
-        StartCoroutine(DoBlink(2, 40));
-        explosionController.Explosion(transform.position + new Vector3(0, -0.3f, 0), 0.8f, 0.7f, 20, 2.0f);
-        audioSource.clip = audioClips[1];
-        audioSource.Play();
+        if (isAlive)
+        {
+            isAlive = false;
+            StartCoroutine(DoBlink(2, 40));
+            explosionController.Explosion(transform.position + new Vector3(0, -0.3f, 0), 0.8f, 0.7f, 20, 2.0f);
+            audioSource.clip = audioClips[1];
+            audioSource.volume = 1;
+            audioSource.Play();
+        }
     }
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)

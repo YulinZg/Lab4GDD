@@ -62,13 +62,13 @@ public class Building : MonoBehaviour
 
     IEnumerator DoBlink(float blinkTime, float blinkNum)
     {
-        if (--GameManagement.Instance.buildingCount == 0)
-            GameManagement.Instance.Lose();
         for (int i = 0; i < blinkNum; i++)
         {
             sprite.enabled = !sprite.enabled;
             yield return new WaitForSeconds(blinkTime / blinkNum);
         }
+        if (--GameManagement.Instance.buildingCount == 0)
+            GameManagement.Instance.Lose();
         Destroy(gameObject);
     }
 }
